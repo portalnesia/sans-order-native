@@ -7,10 +7,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: HomeAppbar(),
-      body: const Pages(
-        child: HomeScreen()
+    return const Scaffold(
+      //appBar: HomeAppbar(),
+      body: Pages(
+        child: AppsScreen()
       ),
     );
   }

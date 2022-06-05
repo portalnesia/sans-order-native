@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sans_order/config/theme.dart';
+import 'package:sans_order/controllers/settings.dart';
+import 'package:sans_order/lang/services.dart';
 import 'package:sans_order/route.dart';
 import 'controllers/oauth.dart';
 
@@ -18,11 +21,18 @@ Future<void> initialize(String entry) async{
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   final oauth = Get.put(OauthControllers(),permanent: true);
-  await oauth.load();
+  final setting = Get.put(SettingControllers(),permanent: true);
 
-  runApp(MyApp(entry: entry));
-  FlutterNativeSplash.remove();
-  
+  try {
+    await GetStorage.init();
+    await oauth.load();
+    await setting.init();
+    runApp(MyApp(entry: entry));
+    FlutterNativeSplash.remove();
+  } finally {
+    runApp(MyApp(entry: entry));
+    FlutterNativeSplash.remove();
+  } 
 }
 
 class MyApp extends StatelessWidget {
@@ -39,7 +49,9 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.light,
       getPages: route,
       initialRoute: '/login',
-      
+      locale: const Locale('en'),
+      fallbackLocale: const Locale('en'),
+      translations: LocalizationService()
     );
   }
 }

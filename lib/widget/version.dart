@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class Version extends StatefulWidget {
-  const Version({Key? key}) : super(key: key);
+  final Color? textColor;
+
+  const Version({Key? key,this.textColor}) : super(key: key);
 
   @override
   State<Version> createState() => _VersionState();
@@ -21,7 +23,7 @@ class _VersionState extends State<Version> {
     return FutureBuilder<String>(
       future: getVersion(),
       builder: (_,version) {
-        return Text(version.hasData ? 'v${version.data}' : '',style: const TextStyle(fontSize: 15));
+        return Text(version.hasData ? 'v${version.data}' : '',style: TextStyle(fontSize: 15,color: widget.textColor));
       }
     );
   }
