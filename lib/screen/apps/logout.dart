@@ -20,12 +20,12 @@ class _State extends State<LogoutButton> {
   void logoutDialog() {
     var context = Get.context as BuildContext;
 
-    showDialog(context: context, builder: (_)=>GetBuilder<OauthControllers>(builder: (u)=>AlertDialog(
-      title: Text("Anda Yakin?",style: Get.textTheme.headline6),
-      content: Text('Keluar dari akun @${u.user.username}',style: Get.textTheme.bodyText1),
+    showDialog(context: context, builder: (_)=>GetBuilder<OauthControllers>(builder: (u)=>CupertinoAlertDialog(
+      title: Text("Anda Yakin?",style: _.theme.textTheme.headline6),
+      content: Text('Keluar dari akun @${u.user.username}',style: _.theme.textTheme.bodyText1),
       actions: [
-        TextButton(onPressed: logout, style: TextButton.styleFrom(primary: Get.theme.errorColor), child: Text("Ya",style: Get.textTheme.headline6!.copyWith(color: Get.theme.errorColor))),
-        TextButton(onPressed: Get.back, child: Text('Batal',style: Get.textTheme.headline6))
+        CupertinoDialogAction(onPressed: Get.back,isDefaultAction: true, child: const Text("Batal"),),
+        CupertinoDialogAction(onPressed: logout, isDestructiveAction: true,child: const Text("Ya")),
       ],
     )));
   }
@@ -34,15 +34,14 @@ class _State extends State<LogoutButton> {
     var context = Get.context as BuildContext;
     Get.back();
     showDialog(barrierDismissible: false,context: context, builder: createLoadingDialog);
-    await Future.delayed(const Duration(seconds: 5));
-    //await oauth.logout();
-    Get.back();
-    //Get.offAllNamed('/login');
+    await oauth.logout();
+    Get.offAllNamed('/login');
   }
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Card(
+        margin: EdgeInsets.zero,
         shape: widget.shapeBorder,
         child: InkWell(
           onTap: logoutDialog,
@@ -52,9 +51,9 @@ class _State extends State<LogoutButton> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.logout,size: 35,color: Get.theme.errorColor,),
+                Icon(Icons.logout,size: 35,color: context.theme.errorColor,),
                 const SizedBox(height: 15),
-                Text('Logout',style: TextStyle(fontSize: 22,color: Get.theme.errorColor),),
+                Text('logout'.tr,style: TextStyle(fontSize: 22,color: context.theme.errorColor),),
               ],
             ),
           ),

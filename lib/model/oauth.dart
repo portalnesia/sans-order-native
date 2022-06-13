@@ -75,6 +75,11 @@ class Oauth {
     return jsonEncode(json);
   }
 
+  TokenResponse? toTokenResponse() {
+    if(access_token == null) return null;
+    return TokenResponse(access_token, refresh_token, expired, id_token, 'bearer', scope?.split(' '),null);
+  }
+
   bool isExpired() {
     return DateTime.now().isAfter(expired!);
   }

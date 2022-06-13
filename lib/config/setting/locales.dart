@@ -4,11 +4,22 @@ import 'package:get/get.dart';
 import 'package:sans_order/config/setting/base.dart';
 
 class LocaleSetting extends Settings<Locale> {
-  static List<String> localeOptions = [
+   @override
+  List<String> get optionsKey => [
     'en',
     'id',
     'auto'
   ];
+  
+  @override
+  Map<String, String> get optionsTitle => {
+    'en': 'English',
+    'id': 'Bahasa Indonesia',
+    'auto': 'System Language'
+  };
+
+  @override
+  String get valueLabel => optionsTitle.containsKey(value) ? optionsTitle[value]! : 'System Languages';
 
   // fallbackLocale saves the day when the locale gets in trouble
   static const fallbackLocale = Locale('en', '');
@@ -17,29 +28,36 @@ class LocaleSetting extends Settings<Locale> {
 
   @override
   Future<Locale> changeValue(data) async {
-    if(localeOptions.contains(data)) {
+    Locale locale = defaultValue;
+    value = 'auto';
+    if(optionsKey.contains(data)) {
+      value = data;
       if(data == 'auto') {
-        return Get.deviceLocale ?? defaultValue;
+        locale = Get.deviceLocale ?? defaultValue;
       } else {
-        return Locale(data);
+        locale = Locale(data);
       }
     }
-    return Get.deviceLocale ?? defaultValue;
+    Get.updateLocale(locale);
+    return locale;
   }
 
   @override
   Future<Locale> init(json) async {
+    Locale locale = defaultValue;
+    value='auto';
     if(json.containsKey('lang') && json['lang'] != null) {
       final String lang = json['lang'] as String;
-      if(localeOptions.contains(lang)) {
+      if(optionsKey.contains(lang)) {
+        value = lang;
         if(lang == 'auto') {
-          return Get.deviceLocale ?? defaultValue;
+          locale = Get.deviceLocale ?? defaultValue;
         } else {
-          return Locale(lang);
+          locale = Locale(lang);
         }
       }
     }
-    return Get.locale ?? defaultValue;
+    return locale;
   }
   
   static Locale defaultValue = const Locale('en');

@@ -1,12 +1,18 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sans_order/config/theme.dart';
 import 'package:sans_order/controllers/settings.dart';
 import 'package:sans_order/lang/services.dart';
 import 'package:sans_order/route.dart';
 import 'controllers/oauth.dart';
+import 'firebase_options.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   initialize('main');
@@ -24,11 +30,16 @@ Future<void> initialize(String entry) async{
   final setting = Get.put(SettingControllers(),permanent: true);
 
   try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    await dotenv.load(fileName: '.env');
+    await FirebaseAppCheck.instance.activate(
+      webRecaptchaSiteKey: dotenv.env['NEXT_PUBLIC_RECAPTCHA']!,
+    );
     await GetStorage.init();
     await oauth.load();
     await setting.init();
-    runApp(MyApp(entry: entry));
-    FlutterNativeSplash.remove();
   } finally {
     runApp(MyApp(entry: entry));
     FlutterNativeSplash.remove();
@@ -38,7 +49,8 @@ Future<void> initialize(String entry) async{
 class MyApp extends StatelessWidget {
   final String entry;
 
-  const MyApp({Key? key,this.entry = 'main'}) : super(key: key);
+  MyApp({Key? key,this.entry = 'main'}) : super(key: key);
+  final setting = Get.find<SettingControllers>();
 
   // This widget is the root of your application.
   @override
@@ -46,12 +58,23 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Sans Order',
       theme: myTheme,
-      themeMode: ThemeMode.light,
+      darkTheme: myDarkTheme,
+      themeMode: setting.theme,
       getPages: route,
       initialRoute: '/login',
-      locale: const Locale('en'),
+      locale: setting.lang,
       fallbackLocale: const Locale('en'),
-      translations: LocalizationService()
+      translations: LocalizationService(),
+      supportedLocales: const [
+        Locale('en'),
+        Locale('id')
+      ],
+      localizationsDelegates: const [
+        RefreshLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }

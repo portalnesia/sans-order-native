@@ -1,9 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sans_order/controllers/oauth.dart';
-import 'package:sans_order/utils/main.dart';
-import 'package:sans_order/widget/loading.dart';
 
 class SettingButton extends StatefulWidget {
   final BorderRadius borderRadius;
@@ -19,7 +16,7 @@ class _State extends State<SettingButton> {
   final oauth = Get.find<OauthControllers>();
 
   void openSetting() {
-    showSnackbar('Sorry', 'This feature is under maintenance',type: SnackType.error);
+    Get.toNamed('/base_setting');
   }
 
   @override
@@ -35,9 +32,9 @@ class _State extends State<SettingButton> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.settings,size: 35,color: Get.textTheme.headline1!.color,),
+                Icon(Icons.settings,size: 35,color: context.theme.textTheme.headline1!.color,),
                 const SizedBox(height: 15),
-                Text('Setting',style: TextStyle(fontSize: 22,color: Get.textTheme.headline1!.color),),
+                Text('setting'.tr,style: TextStyle(fontSize: 22,color: context.theme.textTheme.headline1!.color),),
               ],
             ),
           ),

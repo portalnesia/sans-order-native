@@ -23,6 +23,8 @@ class OauthControllers extends GetxController {
     oauth = Oauth.fromResponse(response);
     user = User.fromString(oauth.id_token!);
 
+    portalnesia.setToken(response);
+
     await secureStorage.write(key:'oauth', value: oauth.toString());
     await secureStorage.write(key: 'user', value: user.toString());
 
@@ -37,10 +39,12 @@ class OauthControllers extends GetxController {
     if(lUser != null) user = User.fromString(lUser);
     if(lOauth != null) {
       final temp = Oauth.fromString(lOauth);
+
       if(temp.isExpired()) {
-        await refreshToken(temp.refresh_token!);
+        return await refreshToken(temp.refresh_token!);
       } else {
         oauth = Oauth.fromString(lOauth);
+        portalnesia.setToken(oauth.toTokenResponse()!);
       }
     }
 
@@ -49,9 +53,7 @@ class OauthControllers extends GetxController {
 
   Future<void> logout() async {
     try {
-      OauthProvider provider = OauthProvider();
-      await provider.revokeAccessToken(oauth);
-      await provider.revokeRefreshToken(oauth);
+      await portalnesia.logout();
     // ignore: empty_catches
     } catch(e) {
 
@@ -67,9 +69,7 @@ class OauthControllers extends GetxController {
   }
 
   Future<void> refreshToken(String token) async {
-    final TokenResponse? result = await appAuth.token(
-      TokenRequest(AUTH_CLIENT_ID, AUTH_REDIRECT_URI,refreshToken: token,scopes: AUTH_SCOPE,serviceConfiguration: serviceConfiguration)
-    );
+    final TokenResponse? result = await portalnesia.refreshToken(tokens: token);
 
     if(result == null) return;
 

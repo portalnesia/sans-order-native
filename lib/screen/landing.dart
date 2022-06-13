@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,9 +6,8 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:sans_order/controllers/oauth.dart';
 import 'package:sans_order/widget/loading.dart';
-import 'package:sans_order/widget/pages.dart';
+import 'package:sans_order/widget/screen.dart';
 import 'package:sans_order/utils/main.dart';
-import 'package:sans_order/utils/oauth.dart';
 import 'package:sans_order/widget/version.dart';
 
 class LandingScreen extends StatelessWidget {
@@ -31,11 +31,15 @@ class LandingScreen extends StatelessWidget {
 
       final TokenResponse? result = await appAuth.token(
         TokenRequest(AUTH_CLIENT_ID, AUTH_REDIRECT_URI,issuer: AUTH_ISSUER,scopes: AUTH_SCOPE,serviceConfiguration: serviceConfiguration,nonce: resp.nonce,authorizationCode: resp.authorizationCode,codeVerifier: resp.codeVerifier)
-      );*/
+      );
       
       final AuthorizationTokenResponse? result = await appAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(AUTH_CLIENT_ID, AUTH_REDIRECT_URI,issuer: AUTH_ISSUER,scopes: AUTH_SCOPE,serviceConfiguration: serviceConfiguration)
       );
+      */
+
+      final AuthorizationTokenResponse? result = await portalnesia.login();
+      
       if(result == null) throw 'Something went wrong';
 
       await oauth.login(result);
@@ -60,7 +64,17 @@ class LandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Pages(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            tooltip: 'setting'.tr,
+            icon: Icon(Icons.settings,color: context.theme.textTheme.headline1!.color),
+            onPressed: () => Get.toNamed('/base_setting'),
+          )
+        ],
+      ),
+      body: Screen(
         child: Stack(
           children: [
             Column(
@@ -72,8 +86,8 @@ class LandingScreen extends StatelessWidget {
                   child: RichText(
                     textAlign: TextAlign.center,
                     text: TextSpan(
-                      text: 'Selamat Datang di ',
-                      style: TextStyle(color: Get.textTheme.headline1!.color,fontSize: 26),
+                      text: 'welcome'.tr,
+                      style: TextStyle(color: context.theme.textTheme.headline1!.color,fontSize: 26),
                       children: const [
                         TextSpan(text: 'SansOrder',style: TextStyle(color: Color.fromARGB(255, 47, 111, 78),fontWeight: FontWeight.bold))
                       ]
@@ -89,10 +103,10 @@ class LandingScreen extends StatelessWidget {
                         onPressed: ()=>loginAction(context), 
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(Icons.login),
-                            SizedBox(width: 15),
-                            Text('Masuk dengan Portalnesia',style: TextStyle(fontSize: 18),)
+                          children: [
+                            const Icon(Icons.login),
+                            const SizedBox(width: 15),
+                            Text('login'.tr,style: const TextStyle(fontSize: 18),)
                           ],
                         )
                       )
@@ -109,8 +123,8 @@ class LandingScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextButton(onPressed: ()=>openUrl('https://portalnesia.com/pages/terms-of-service'), child: const Text('Terms of Services')),
-                    TextButton(onPressed: ()=>openUrl('https://portalnesia.com/pages/privacy-policy'), child: const Text('Privacy Policy')),
+                    CupertinoButton(onPressed: ()=>openUrl('https://portalnesia.com/pages/terms-of-service'), child: Text('terms_of_service'.tr,style: context.theme.textTheme.bodyText2,)),
+                    CupertinoButton(onPressed: ()=>openUrl('https://portalnesia.com/pages/privacy-policy'), child: Text('privacy_policy'.tr,style: context.theme.textTheme.bodyText2)),
                   ],
                 ),
                 Row(
