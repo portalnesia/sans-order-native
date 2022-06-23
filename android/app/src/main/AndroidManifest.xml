@@ -18,7 +18,8 @@
    <application
         android:label="SansOrder"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -56,6 +57,7 @@
               <data android:scheme="sansorder" />
             </intent-filter>
         </activity>
+        <!-- 
        <activity
            android:name=".ShareActivity"
            android:exported="true"
@@ -72,10 +74,14 @@
                <action android:name="android.intent.action.VIEW"/>
            </intent-filter>
        </activity>
-        <!-- Don't delete the meta-data below.
+        Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+      <background android:drawable="@color/primary" />
+      <foreground android:drawable="@mipmap/ic_launcher_adaptive_fore" />
+    </adaptive-icon>
 </manifest>
