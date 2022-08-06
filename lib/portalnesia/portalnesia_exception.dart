@@ -1,32 +1,21 @@
 class PortalnesiaException implements Exception {
   late String name;
   late String message;
-  int? code;
-  dynamic payload;
-  int? httpStatus;
+  late int status;
+  dynamic details;
 
-  PortalnesiaException({data,int? code,String? name, int? httpStatus}) {
-    String msg='';
-    
-    if(data is String) {
-      msg = data;
-    } else if(data is Map) {
-      payload = data;
-      if(data['error'] is bool) {
-        msg = data['message'] ?? 'Something went wrong';
-      } else {
-        msg = data['error']?['description'] ?? data['error_description'] ?? "Something went wrong";
+  PortalnesiaException(Map<dynamic, dynamic>? data) {
+    if(data != null && data['error'] is Map) {
+      name = data['error']['name'];
+      message = data['error']['message'];
+      status = data['error']['status'];
+      if(data['error']['details'] != null) {
+        details = data['error']['details'];
       }
-    }
-    message = msg;
-    this.name = name != null ? '[PortalnesiaError] $name' : 
-      data is! String && data['error'] is! bool && data['error']['name'] is String ? '[PortalnesiaError] ${data['error']['name']}' : 
-      data is! String && data['error'] is String ? '[PortalnesiaError] ${data['error']}' : 'PortalnesiaError';
-
-    if(code is int) {
-      this.code = code;
-    } else if(data is! String && data['error'] is! bool && data['error']['code'] is int) {
-      this.code = data['error']['code'];
+    } else {
+      name = "UnknownError";
+      message = "Something went wrong";
+      status = 503;
     }
   }
 }

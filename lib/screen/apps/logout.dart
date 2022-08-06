@@ -22,7 +22,7 @@ class _State extends State<LogoutButton> {
 
     showDialog(context: context, builder: (_)=>GetBuilder<OauthControllers>(builder: (u)=>CupertinoAlertDialog(
       title: Text("Anda Yakin?",style: _.theme.textTheme.headline6),
-      content: Text('Keluar dari akun @${u.user.username}',style: _.theme.textTheme.bodyText1),
+      content: Text('Keluar dari akun @${u.token.user?.username}',style: _.theme.textTheme.bodyText1),
       actions: [
         CupertinoDialogAction(onPressed: Get.back,isDefaultAction: true, child: const Text("Batal"),),
         CupertinoDialogAction(onPressed: logout, isDestructiveAction: true,child: const Text("Ya")),

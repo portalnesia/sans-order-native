@@ -1,199 +1,34 @@
 {
   "project_info": {
-    "project_number": "152584550462",
-    "firebase_url": "https://portalnesia.firebaseio.com",
-    "project_id": "portalnesia",
-    "storage_bucket": "portalnesia.appspot.com"
+    "project_number": "770501761513",
+    "project_id": "sans-order",
+    "storage_bucket": "sans-order.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:152584550462:android:a9e8c73584aeb47c0d796f",
+        "mobilesdk_app_id": "1:770501761513:android:9e0b38fbdaa0bc52965378",
         "android_client_info": {
-          "package_name": "com.example"
+          "package_name": "com.portalnesia.sansorder.dashboard"
         }
       },
       "oauth_client": [
         {
-          "client_id": "152584550462-2j9u49mnm4ckq6qaq5sor7868a8c6cu5.apps.googleusercontent.com",
+          "client_id": "770501761513-evp9ga1h85v46177vf9lfsut346kqm3r.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA64zFwA0P-0mqHxT1sWUsGD2ue-kYuwgs"
-        },
-        {
-          "current_key": "AIzaSyCTAhr2mQz2uQWa04NezvWKjZNqH5QUyLM"
-        },
-        {
-          "current_key": "AIzaSyAzIjpKFxqj22Gy4AHLJ7PNyx8p4zHVdO0"
+          "current_key": "AIzaSyDu2S6q43t5WnCdlBlINK8zYVPlwPtL0Mo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "152584550462-2j9u49mnm4ckq6qaq5sor7868a8c6cu5.apps.googleusercontent.com",
+              "client_id": "770501761513-evp9ga1h85v46177vf9lfsut346kqm3r.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "152584550462-kk4io56qjsemlu4l1d9upr1na86t4d82.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.sansOrder"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:152584550462:android:679053425bac7e000d796f",
-        "android_client_info": {
-          "package_name": "com.portalnesia.app"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "152584550462-mouaodivaj91u1akq9pp23jdudsuollm.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.portalnesia.app",
-            "certificate_hash": "13ae4852679d9be32a0299ad249fa5807b9d93af"
-          }
-        },
-        {
-          "client_id": "152584550462-2j9u49mnm4ckq6qaq5sor7868a8c6cu5.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA64zFwA0P-0mqHxT1sWUsGD2ue-kYuwgs"
-        },
-        {
-          "current_key": "AIzaSyCTAhr2mQz2uQWa04NezvWKjZNqH5QUyLM"
-        },
-        {
-          "current_key": "AIzaSyAzIjpKFxqj22Gy4AHLJ7PNyx8p4zHVdO0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "152584550462-2j9u49mnm4ckq6qaq5sor7868a8c6cu5.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "152584550462-kk4io56qjsemlu4l1d9upr1na86t4d82.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.sansOrder"
-              }
-            }
-          ]
-        }
-      },
-      "admob_app_id": "ca-app-pub-5345145600516995~7540046866"
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:152584550462:android:2328bbc190b8cfd40d796f",
-        "android_client_info": {
-          "package_name": "com.portalnesia.app.debug"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "152584550462-hk72gnp9l1kml0g91nmm4bph1cbod4m3.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.portalnesia.app.debug",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "152584550462-2j9u49mnm4ckq6qaq5sor7868a8c6cu5.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA64zFwA0P-0mqHxT1sWUsGD2ue-kYuwgs"
-        },
-        {
-          "current_key": "AIzaSyCTAhr2mQz2uQWa04NezvWKjZNqH5QUyLM"
-        },
-        {
-          "current_key": "AIzaSyAzIjpKFxqj22Gy4AHLJ7PNyx8p4zHVdO0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "152584550462-2j9u49mnm4ckq6qaq5sor7868a8c6cu5.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "152584550462-kk4io56qjsemlu4l1d9upr1na86t4d82.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.sansOrder"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:152584550462:android:e4ec779075db46610d796f",
-        "android_client_info": {
-          "package_name": "com.portalnesia.sansorder"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "152584550462-4i2d78mhrfp27a1iv0m46lphp22rtqv7.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.portalnesia.sansorder",
-            "certificate_hash": "a99bdfa8beaa89c3d29a229da19ece67b554e3b2"
-          }
-        },
-        {
-          "client_id": "152584550462-2j9u49mnm4ckq6qaq5sor7868a8c6cu5.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA64zFwA0P-0mqHxT1sWUsGD2ue-kYuwgs"
-        },
-        {
-          "current_key": "AIzaSyCTAhr2mQz2uQWa04NezvWKjZNqH5QUyLM"
-        },
-        {
-          "current_key": "AIzaSyAzIjpKFxqj22Gy4AHLJ7PNyx8p4zHVdO0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "152584550462-2j9u49mnm4ckq6qaq5sor7868a8c6cu5.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "152584550462-kk4io56qjsemlu4l1d9upr1na86t4d82.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.sansOrder"
-              }
             }
           ]
         }

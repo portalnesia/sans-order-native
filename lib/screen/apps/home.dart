@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -26,25 +27,30 @@ class _AppScreenState extends State<AppsScreen> {
 
   Future<void> _getMerchant(int pageKey) async {
     try {
-      final newItems = await portalnesia.request(TokoModel(), Method.get, '/toko?per_page=5&type=toko');
+      final items = await portalnesia.request<IToko>(Method.get, '/tokos?pagination[page]=$pageKey');
+      final newItems = items.toPaginationModel(TokoModel());
+      if (kDebugMode) {
+        print(newItems);
+      }
       if(newItems.data.isNotEmpty) {
         newItems.data.add(IToko(id: 0, name: '', slug: 'toko'));
       }
       tokoController.appendLastPage(newItems.data);
     } catch (error) {
-      if(error is PortalnesiaException) tokoController.error = error.message;
+      if(error is PortalnesiaException) tokoController.error = error;
     }
   }
 
   Future<void> _getOutlet(int pageKey) async {
     try {
-      final newItems = await portalnesia.request(TokoModel(), Method.get, '/toko?per_page=5&type=outlet');
+      final items = await portalnesia.request<IToko>(Method.get, '/outlets?pagination[page]=$pageKey');
+      final newItems = items.toPaginationModel(TokoModel());
       if(newItems.data.isNotEmpty) {
         newItems.data.add(IToko(id: 0, name: '', slug: 'outlet'));
       }
       outletController.appendLastPage(newItems.data);
     } catch (error) {
-      if(error is PortalnesiaException) outletController.error = error.message;
+      if(error is PortalnesiaException) outletController.error = error;
     }
   }
 
@@ -239,7 +245,7 @@ class _TokoCard extends StatelessWidget {
           child:  Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CachedNetworkImage(imageUrl: '${photoUrl(toko.logo)}&watermark=no&export=banner&size=300&no_twibbon=true',height: 100,width: double.infinity,fit: BoxFit.fitWidth,cacheKey: 'toko_${toko.id}_card',),
+              CachedNetworkImage(imageUrl: photoUrl(toko.logo?.url),height: 100,width: double.infinity,fit: BoxFit.fitWidth,cacheKey: 'toko_${toko.id}_card',),
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text((toko.name),style: context.theme.textTheme.headline6,overflow: TextOverflow.ellipsis,maxLines: 2),

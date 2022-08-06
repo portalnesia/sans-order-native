@@ -1,68 +1,83 @@
 // ignore_for_file: non_constant_identifier_names
 
-class ApiError {
+import 'dart:convert';
+
+class PortalnesiaUser {
+  int id;
   String name;
-  int code;
-  String description;
+  String username;
+  String? picture;
+  String email;
+  String? telephone;
 
-  ApiError(this.name,this.code,this.description);
-}
+  PortalnesiaUser({
+    required this.name,
+    required this.id,
+    required this.username,
+    required this.picture,
+    required this.email,
+    this.telephone
+  });
 
-class ResponseData<R> {
-  ApiError? error;
-  R? data;
-  String? message;
+  static PortalnesiaUser fromMap(Map data) {
+    return PortalnesiaUser(
+      id: data['id'] ?? 0,
+      name: data['name'] ?? '',
+      username: data['username'] ?? '',
+      picture: data['picture'],
+      email: data['email'] ?? '',
+      telephone: data['telephone']
+    );
+  }
 
-  ResponseData(this.data,{String? message,Map<String,dynamic>? error}) {
-    if(error != null) {
-      this.error = ApiError(error['name'], error['code'], error['description']);
-    }
+  static PortalnesiaUser fromString(String jsonString) {
+    Map<String,dynamic> data = jsonDecode(jsonString);
+
+    return fromMap(data);
+  }
+
+  
+
+  Map toMap() {
+    final Map map = {
+      "id": id,
+      "name": name,
+      "username": username,
+      "picture": picture,
+      "email": email,
+      "telephone": telephone
+    };
+    return map;
   }
 }
 
-abstract class PortalnesiaModel {
-
-}
-abstract class PortalnesiaResponse<R> {
-  R fromMap(Map<dynamic,dynamic> data);
-}
-
-class PortalnesiaPaginationModel<R extends PortalnesiaModel> extends PortalnesiaModel {
-  List<R> data;
+class Pagination {
   int page;
-  int? total_page;
-  bool can_load;
-  int? total;
+  int pageSize;
+  int pageCount;
+  int total;
 
-  PortalnesiaPaginationModel({
-    required this.data,
-    this.page = 1,
-    this.can_load = false,
-    this.total = 1,
-    this.total_page = 1
+  Pagination({
+    required this.page,
+    required this.pageSize,
+    required this.pageCount,
+    required this.total
   });
 }
 
-abstract class PortalnesiaPaginationResponse<R extends PortalnesiaModel> extends PortalnesiaResponse<PortalnesiaPaginationModel<R>> {
-  R dataMap(Map<dynamic,dynamic> data);
+class Meta {
+  Pagination pagination;
 
-  @override
-  PortalnesiaPaginationModel<R> fromMap(Map<dynamic,dynamic> data) {
-    if(data['data'] == null) throw UnimplementedError();
+  Meta(this.pagination);
 
-    List<R> lists = [];
-    if(data['data'] is List) {
-      for(Map datas in data['data']) {
-        lists.add(dataMap(datas));
-      }
-    }
-
-    return PortalnesiaPaginationModel<R>(
-      page: data['page'] ?? 1,
-      total: data['total'] ?? 1,
-      total_page: data['total_page'] ?? 1,
-      can_load: data['can_load'] ?? false,
-      data: lists
+  static fromMap(Map data) {
+    return Meta(
+      Pagination(
+        page: data['meta']['pagination']['page'],
+        pageSize: data['meta']['pagination']['pageSize'],
+        pageCount: data['meta']['pagination']['pageCount'],
+        total: data['meta']['pagination']['total']
+      )
     );
   }
 }
@@ -72,4 +87,113 @@ enum Method {
   delete,
   post,
   get
+}
+
+class IToken {
+  final PortalnesiaUser? user;
+  final String? refresh;
+  final String? jwt;
+  final DateTime? expired;
+
+  const IToken({
+    this.user,
+    this.refresh,
+    this.jwt,
+    this.expired
+  });
+
+  @override
+  String toString() {
+    if(jwt != null) {
+      Map<String,dynamic> json = {
+        'user': user?.toMap(),
+        'refresh': refresh,
+        'jwt': jwt,
+        'expired': expired?.millisecondsSinceEpoch
+      };
+      return jsonEncode(json);
+    }
+    return jsonEncode({});
+  }
+
+  static IToken fromMap(Map data) {
+    return IToken(
+      user: data['user'] != null ? PortalnesiaUser.fromMap(data['user']) : null,
+      refresh: data['refresh'],
+      jwt: data['jwt'],
+      expired: data['expired'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['expired'] * 1000) 
+    );
+  }
+
+  static IToken fromString(String jsonString) {
+    Map<String,dynamic> data = jsonDecode(jsonString);
+    return IToken.fromMap(data);
+  }
+
+  bool isExpired() {
+    if(expired != null) {
+      if(DateTime.now().isAfter(expired as DateTime)) return true;
+    }
+    return false;
+  }
+
+  bool isLogin() {
+    return jwt != null;
+  }
+}
+
+abstract class PortalnesiaModel<R> {
+  R fromMap(Map data);
+
+  PortalnesiaResponseModel<R> toModel(Map data) {
+    final dt = fromMap(data['data']);
+    final meta = Meta.fromMap(data);
+
+    return PortalnesiaResponseModel<R>(data: dt, meta: meta);
+  }
+
+  PortalnesiaPaginationResponseModel<R> toPaginationModel(Map data) {
+    List<R> lists = [];
+
+    if(data['data'] is List) {
+      for(Map datas in data['data']) {
+        lists.add(fromMap(datas));
+      }
+    }
+
+    return PortalnesiaPaginationResponseModel<R>(
+      meta: Meta.fromMap(data),
+      data: lists
+    );
+  }
+}
+
+class PortalnesiaResponseModel<R> {
+  R data;
+  Meta? meta;
+
+  PortalnesiaResponseModel({required this.data,this.meta});
+}
+
+class PortalnesiaPaginationResponseModel<R> {
+  List<R> data;
+  Meta meta;
+
+  PortalnesiaPaginationResponseModel({
+    required this.data,
+    required this.meta
+  });
+}
+
+class PortalnesiaResponse<R> {
+  Map data;
+  PortalnesiaResponse(this.data);
+
+  PortalnesiaResponseModel<R> toModel(PortalnesiaModel<R> model) {
+    return model.toModel(data);
+  }
+
+  PortalnesiaPaginationResponseModel<R> toPaginationModel(PortalnesiaModel<R> model) {
+    return model.toPaginationModel(data);
+  }
 }

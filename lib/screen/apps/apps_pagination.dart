@@ -47,9 +47,10 @@ class _AppsState extends State<AppsPagination> {
 
   Future<void> _getData(int pageKey) async {
     try {
-      final newItems = await portalnesia.request(TokoModel(), Method.get, '/toko?page=$pageKey&per_page=12&type=$type');
-      if(newItems.can_load) {
-        pageController.appendPage(newItems.data, newItems.page+1);
+      final items = await portalnesia.request<IToko>(Method.get, '/toko?page=$pageKey&per_page=12&type=$type');
+      final newItems = items.toPaginationModel(TokoModel());
+      if(newItems.meta.pagination.page <= newItems.meta.pagination.pageCount) {
+        pageController.appendPage(newItems.data, newItems.meta.pagination.page+1);
       } else {
         pageController.appendLastPage(newItems.data);
       }
@@ -143,7 +144,7 @@ class _TokoCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CachedNetworkImage(imageUrl: '${photoUrl(toko.logo)}&watermark=no&export=banner&size=300&no_twibbon=true',height: 100,width: double.infinity,fit: BoxFit.fitWidth,cacheKey: 'toko_${toko.id}_card',),
+            CachedNetworkImage(imageUrl: photoUrl(toko.logo?.url),height: 100,width: double.infinity,fit: BoxFit.fitWidth,cacheKey: 'toko_${toko.id}_card',),
             Padding(
               padding: const EdgeInsets.all(10),
               child: Text((toko.name),style: context.theme.textTheme.headline6),

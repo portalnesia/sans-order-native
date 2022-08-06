@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as custom_tabs;
@@ -15,7 +14,7 @@ export 'package:sans_order/portalnesia/portalnesia_exception.dart';
 
 FlutterAppAuth appAuth = const FlutterAppAuth();
 FlutterSecureStorage secureStorage = const FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
-Portalnesia portalnesia = Portalnesia(AUTH_CLIENT_ID,AUTH_REDIRECT_URI,scopes: AUTH_SCOPE,headers: kDebugMode ? {'X-Debug': dotenv.env['NEXT_PUBLIC_X_DEBUG']!} : null);
+Portalnesia portalnesia = Portalnesia(dotenv.env['API_URL'] as String,AUTH_CLIENT_ID,AUTH_REDIRECT_URI,scopes: AUTH_SCOPE);
 
 String uuid({String? namespace}) {
   const uuid_instance.Uuid uuid = uuid_instance.Uuid();
@@ -27,6 +26,10 @@ String uuid({String? namespace}) {
   }
 
   return result;
+}
+
+String webUrl(String? path) {
+  return dotenv.env['WEB_URL']! + (path ?? ""); 
 }
 
 Future<void> openUrl(String uri,{bool webview = false}) async {

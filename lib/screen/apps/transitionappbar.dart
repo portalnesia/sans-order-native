@@ -34,8 +34,8 @@ class TransitionAppBarDelegate extends SliverPersistentHeaderDelegate {
                 child: GetBuilder<OauthControllers>(builder: (u)=>CircleAvatar(
                   radius: lerpDouble(40, 20, progress),
                   backgroundColor: context.theme.backgroundColor,
-                  backgroundImage: u.user.picture != null ? CachedNetworkImageProvider(u.user.picture!) : null,
-                  child: u.user.picture == null ? const Icon(Icons.person_outline_rounded) : null,
+                  backgroundImage: u.token.user?.picture != null ? CachedNetworkImageProvider(u.token.user!.picture!) : null,
+                  child: u.token.user?.picture == null ? const Icon(Icons.person_outline_rounded) : null,
                 )),
               ),
               
@@ -56,8 +56,8 @@ class TransitionAppBarDelegate extends SliverPersistentHeaderDelegate {
                   padding: EdgeInsets.lerp(EdgeInsets.only(top: extent/2 + 20, left: 12), EdgeInsets.only(top: extent/4, left: 12), progress),
                   alignment: Alignment.centerLeft,
                   child: SizedBox(width: Get.width - 110,child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    GetBuilder<OauthControllers>(builder: (u) => Text(u.user.name ?? '',overflow: TextOverflow.ellipsis,style: context.theme.textTheme.headline6!.copyWith(color: Colors.white,fontWeight: FontWeight.bold),)),
-                    GetBuilder<OauthControllers>(builder: (u) => Text('@${u.user.username}',overflow: TextOverflow.ellipsis,style: context.theme.textTheme.bodyText1!.copyWith(color: Colors.white))),
+                    GetBuilder<OauthControllers>(builder: (u) => Text(u.token.user?.name ?? '',overflow: TextOverflow.ellipsis,style: context.theme.textTheme.headline6!.copyWith(color: Colors.white,fontWeight: FontWeight.bold),)),
+                    GetBuilder<OauthControllers>(builder: (u) => Text('@${u.token.user?.username}',overflow: TextOverflow.ellipsis,style: context.theme.textTheme.bodyText1!.copyWith(color: Colors.white))),
                   ])),
                 )
               ),

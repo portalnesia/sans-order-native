@@ -53,11 +53,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA64zFwA0P-0mqHxT1sWUsGD2ue-kYuwgs',
-    appId: '1:152584550462:android:e4ec779075db46610d796f',
-    messagingSenderId: '152584550462',
-    projectId: 'portalnesia',
-    databaseURL: 'https://portalnesia.firebaseio.com',
-    storageBucket: 'portalnesia.appspot.com',
+    apiKey: 'AIzaSyDu2S6q43t5WnCdlBlINK8zYVPlwPtL0Mo',
+    appId: '1:770501761513:android:9e0b38fbdaa0bc52965378',
+    messagingSenderId: '770501761513',
+    projectId: 'sans-order',
+    storageBucket: 'sans-order.appspot.com',
   );
 }

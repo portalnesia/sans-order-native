@@ -3,11 +3,77 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 // ignore: implementation_imports
-import 'package:infinite_scroll_pagination/src/ui/default_indicators/first_page_exception_indicator.dart';
 // ignore: implementation_imports
 import 'package:infinite_scroll_pagination/src/ui/default_indicators/footer_tile.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:sans_order/portalnesia/portalnesia_exception.dart';
+
+class FirstPageExceptionIndicator extends StatelessWidget {
+  const FirstPageExceptionIndicator({
+    required this.title,
+    this.message,
+    this.onTryAgain,
+    Key? key,
+  }) : super(key: key);
+
+  final String title;
+  final String? message;
+  final VoidCallback? onTryAgain;
+
+  @override
+  Widget build(BuildContext context) {
+    final message = this.message;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+            if (message != null)
+              const SizedBox(
+                height: 16,
+              ),
+            if (message != null)
+              Text(
+                message,
+                textAlign: TextAlign.center,
+              ),
+            if (onTryAgain != null)
+              const SizedBox(
+                height: 20,
+              ),
+            if (onTryAgain != null)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: onTryAgain,
+                  icon: const Icon(
+                    Icons.refresh,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Try Again',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 
 class FirstPageError extends StatelessWidget {
   final PagingController pagingController;

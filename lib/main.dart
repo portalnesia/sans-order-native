@@ -37,6 +37,7 @@ Future<void> initialize(String entry) async{
     await FirebaseAppCheck.instance.activate(
       webRecaptchaSiteKey: dotenv.env['NEXT_PUBLIC_RECAPTCHA']!,
     );
+    await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
     await GetStorage.init();
     await oauth.load();
     await setting.init();

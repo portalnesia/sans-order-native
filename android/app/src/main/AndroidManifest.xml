@@ -1,9 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.portalnesia.sansorder">
+    package="com.portalnesia.sansorder.dashboard">
     <uses-permission android:name="android.permission.INTERNET"/>
     
     <queries>
-      <package android:name="com.portalnesia.app" />
       <intent>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.BROWSABLE" />
@@ -16,7 +15,7 @@
       </intent>
     </queries>
    <application
-        android:label="SansOrder"
+        android:label="SansOrder Dashboard"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round">
@@ -47,7 +46,7 @@
               <action android:name="android.intent.action.VIEW" />
               <category android:name="android.intent.category.DEFAULT" />
               <category android:name="android.intent.category.BROWSABLE" />
-              <data android:scheme="https" android:host="sansorder.com" />
+              <data android:scheme="https" android:host="sansorder.portalnesia.com" />
             </intent-filter>
 
             <intent-filter>
@@ -80,8 +79,4 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
-    <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-      <background android:drawable="@color/primary" />
-      <foreground android:drawable="@mipmap/ic_launcher_adaptive_fore" />
-    </adaptive-icon>
 </manifest>

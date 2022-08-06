@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:sans_order/controllers/oauth.dart';
 import 'package:sans_order/widget/loading.dart';
@@ -38,7 +37,7 @@ class LandingScreen extends StatelessWidget {
       );
       */
 
-      final AuthorizationTokenResponse? result = await portalnesia.login();
+      final IToken? result = await portalnesia.login();
       
       if(result == null) throw 'Something went wrong';
 
@@ -46,6 +45,12 @@ class LandingScreen extends StatelessWidget {
       
       // ignore: use_build_context_synchronously
       Get.offAllNamed('/apps');
+    } on PortalnesiaException catch(e) {
+      Navigator.pop(context);
+      showSnackbar('Error', e.message,type: SnackType.error);
+      if (kDebugMode) {
+        print(e);
+      }
     } on PlatformException catch (e) {
       Navigator.pop(context);
       showSnackbar('Error', e.message ?? 'Something went wrong',type: SnackType.error);
@@ -123,8 +128,8 @@ class LandingScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CupertinoButton(onPressed: ()=>openUrl('https://portalnesia.com/pages/terms-of-service'), child: Text('terms_of_service'.tr,style: context.theme.textTheme.bodyText2,)),
-                    CupertinoButton(onPressed: ()=>openUrl('https://portalnesia.com/pages/privacy-policy'), child: Text('privacy_policy'.tr,style: context.theme.textTheme.bodyText2)),
+                    CupertinoButton(onPressed: ()=>openUrl(webUrl('/pages/terms-of-services')), child: Text('terms_of_service'.tr,style: context.theme.textTheme.bodyText2,)),
+                    CupertinoButton(onPressed: ()=>openUrl(webUrl('/pages/privacy-policy')), child: Text('privacy_policy'.tr,style: context.theme.textTheme.bodyText2)),
                   ],
                 ),
                 Row(

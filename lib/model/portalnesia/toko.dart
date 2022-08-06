@@ -1,15 +1,19 @@
 
+import 'package:sans_order/model/portalnesia/wallet.dart';
 import 'package:sans_order/portalnesia/model/portalnesia.dart';
+import 'package:sans_order/model/portalnesia/file.dart';
+//import 'package:sans_order/model/portalnesia/wallet.dart';
 
-class IToko extends PortalnesiaModel {
+class IToko {
   int id;
   String name;
   String? description;
   String slug;
-  String? logo;
+  IFile? logo;
   String? slogan;
-  bool admin = false;
-  
+  PortalnesiaUser? user;
+  IWallet? wallet;
+
   IToko({
     required this.id,
     required this.name,
@@ -17,21 +21,27 @@ class IToko extends PortalnesiaModel {
     this.description,
     this.logo,
     this.slogan,
-    this.admin = false
+    this.user,
+    this.wallet
   });
-}
 
-class TokoModel extends PortalnesiaPaginationResponse<IToko> {
-  @override
-  IToko dataMap(Map data) {
+  static IToko fromMap(Map data) {
     return IToko(
       id: data['id'],
       name: data['name'],
       slug: data['slug'],
       description: data['description'],
-      logo: data['logo'],
       slogan: data['slogan'],
-      admin: data['admin']
+      user: data['user']['username'] is String ? PortalnesiaUser.fromMap(data['user']) : null,
+      logo: data['logo']['url'] is String ? IFile.fromMap(data['logo']) : null,
+      wallet: data['wallet']['balance'] is int ? IWallet.fromMap(data['wallet']) : null
     );
+  }
+}
+
+class TokoModel extends PortalnesiaModel<IToko> {
+  @override
+  IToko fromMap(Map data) {
+    return IToko.fromMap(data);
   }
 }
