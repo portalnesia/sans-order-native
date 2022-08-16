@@ -81,9 +81,9 @@ class SliversDelegate extends SliverPersistentHeaderDelegate {
             children: [
               ...(appBar != null ? [appBar!] : []),
               Container(
-                padding: EdgeInsets.lerp(const EdgeInsets.only(bottom: 20), const EdgeInsets.only(top: 25), progress),
-                alignment: Alignment.lerp(Alignment.bottomCenter, Alignment.center, progress),
-                child: Text(title,style: TextStyle.lerp(
+                padding: minExtent == height ? const EdgeInsets.only(top: 25) : EdgeInsets.lerp(const EdgeInsets.only(bottom: 20), const EdgeInsets.only(top: 25), progress),
+                alignment: minExtent == height ? Alignment.center : Alignment.lerp(Alignment.bottomCenter, Alignment.center, progress),
+                child: minExtent == height ? Text(title,style: context.theme.textTheme.headline4!.copyWith(color: Colors.white,fontWeight: FontWeight.bold)) : Text(title,style: TextStyle.lerp(
                   context.theme.textTheme.headline1!.copyWith(color: Colors.white), 
                   context.theme.textTheme.headline4!.copyWith(color: Colors.white,fontWeight: FontWeight.bold), 
                   progress

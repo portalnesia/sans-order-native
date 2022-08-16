@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:sans_order/controllers/oauth.dart';
+import 'package:sans_order/screen/setting.dart';
 import 'package:sans_order/widget/loading.dart';
 import 'package:sans_order/widget/screen.dart';
 import 'package:sans_order/utils/main.dart';
@@ -75,7 +76,7 @@ class LandingScreen extends StatelessWidget {
           IconButton(
             tooltip: 'setting'.tr,
             icon: Icon(Icons.settings,color: context.theme.textTheme.headline1!.color),
-            onPressed: () => Get.toNamed('/base_setting'),
+            onPressed: () => Get.to(() => HomeSetting()),
           )
         ],
       ),
@@ -105,7 +106,11 @@ class LandingScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       ElevatedButton(
-                        onPressed: ()=>loginAction(context), 
+                        onPressed: ()=>loginAction(context),
+                        style: ElevatedButton.styleFrom(
+                          primary: Get.theme.colorScheme.primary,
+                          textStyle: const TextStyle(color: Colors.white)
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

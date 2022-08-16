@@ -2,13 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sans_order/controllers/oauth.dart';
+import 'package:sans_order/widget/button_menu.dart';
 import 'package:sans_order/widget/loading.dart';
 
 class LogoutButton extends StatefulWidget {
-  final BorderRadius borderRadius;
-  final ShapeBorder shapeBorder;
   
-  const LogoutButton({Key? key,required this.borderRadius,required this.shapeBorder}) : super(key: key);
+  const LogoutButton({Key? key}) : super(key: key);
   
   @override
   State<LogoutButton> createState() => _State();
@@ -20,12 +19,12 @@ class _State extends State<LogoutButton> {
   void logoutDialog() {
     var context = Get.context as BuildContext;
 
-    showDialog(context: context, builder: (_)=>GetBuilder<OauthControllers>(builder: (u)=>CupertinoAlertDialog(
-      title: Text("Anda Yakin?",style: _.theme.textTheme.headline6),
-      content: Text('Keluar dari akun @${u.token.user?.username}',style: _.theme.textTheme.bodyText1),
+    showCupertinoModalPopup(context: context, builder: (_)=>GetBuilder<OauthControllers>(builder: (u)=>CupertinoAlertDialog(
+      title: Text("are_you_sure".tr,style: _.theme.textTheme.headline6),
+      content: Text('logout_confirmation'.trParams({"what":"@${u.token.user?.username}"}),style: _.theme.textTheme.bodyText1),
       actions: [
-        CupertinoDialogAction(onPressed: Get.back,isDefaultAction: true, child: const Text("Batal"),),
-        CupertinoDialogAction(onPressed: logout, isDestructiveAction: true,child: const Text("Ya")),
+        CupertinoDialogAction(onPressed: Get.back,isDefaultAction: true, child: Text("cancel".tr),),
+        CupertinoDialogAction(onPressed: logout, isDestructiveAction: true,child: Text("yes".tr)),
       ],
     )));
   }
@@ -37,28 +36,13 @@ class _State extends State<LogoutButton> {
     await oauth.logout();
     Get.offAllNamed('/login');
   }
+  
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        margin: EdgeInsets.zero,
-        shape: widget.shapeBorder,
-        child: InkWell(
-          onTap: logoutDialog,
-          borderRadius: widget.borderRadius,
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.logout,size: 35,color: context.theme.errorColor,),
-                const SizedBox(height: 15),
-                Text('logout'.tr,style: TextStyle(fontSize: 22,color: context.theme.errorColor),),
-              ],
-            ),
-          ),
-        )
-      )
+    return ButtonMenu(
+      icon: Icon(Icons.logout,size: 35,color: context.theme.errorColor,), 
+      text: Text('logout'.tr,style: TextStyle(fontSize: 22,color: context.theme.errorColor),),
+      onPress: logoutDialog,
     );
   }
 }

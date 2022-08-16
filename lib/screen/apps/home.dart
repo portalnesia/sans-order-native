@@ -1,17 +1,20 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:sans_order/model/portalnesia/outlet.dart';
 import 'package:sans_order/model/portalnesia/toko.dart';
 import 'package:sans_order/screen/apps/logout.dart';
-import 'package:sans_order/screen/apps/setting.dart';
+import 'package:sans_order/screen/apps/outlets_pagination.dart';
 import 'package:sans_order/screen/apps/transitionappbar.dart';
+import 'package:sans_order/screen/outlet/outlet_card.dart';
+import 'package:sans_order/screen/toko/toko_card.dart';
 import 'package:sans_order/utils/main.dart';
 import 'package:sans_order/widget/pagination.dart';
 import 'package:sans_order/widget/version.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:sans_order/screen/apps/setting.dart';
+
+import 'apps_pagination.dart';
 
 class AppsScreen extends StatefulWidget {
   const AppsScreen({Key? key}) : super(key: key);
@@ -23,15 +26,12 @@ class AppsScreen extends StatefulWidget {
 class _AppScreenState extends State<AppsScreen> {
   final RefreshController refreshController = RefreshController();
   final PagingController<int,IToko> tokoController = PagingController(firstPageKey: 1);
-  final PagingController<int,IToko> outletController = PagingController(firstPageKey: 1);
+  final PagingController<int,IOutlet> outletController = PagingController(firstPageKey: 1);
 
   Future<void> _getMerchant(int pageKey) async {
     try {
       final items = await portalnesia.request<IToko>(Method.get, '/tokos?pagination[page]=$pageKey');
       final newItems = items.toPaginationModel(TokoModel());
-      if (kDebugMode) {
-        print(newItems);
-      }
       if(newItems.data.isNotEmpty) {
         newItems.data.add(IToko(id: 0, name: '', slug: 'toko'));
       }
@@ -43,10 +43,10 @@ class _AppScreenState extends State<AppsScreen> {
 
   Future<void> _getOutlet(int pageKey) async {
     try {
-      final items = await portalnesia.request<IToko>(Method.get, '/outlets?pagination[page]=$pageKey');
-      final newItems = items.toPaginationModel(TokoModel());
+      final items = await portalnesia.request<IOutlet>(Method.get, '/outlets?pagination[page]=$pageKey');
+      final newItems = items.toPaginationModel(OutletModel());
       if(newItems.data.isNotEmpty) {
-        newItems.data.add(IToko(id: 0, name: '', slug: 'outlet'));
+        newItems.data.add(IOutlet(block: false, busy: false, cod: false, id: 0, name: "", online_payment: false, self_order: false, table_number: false));
       }
       outletController.appendLastPage(newItems.data);
     } catch (error) {
@@ -110,7 +110,7 @@ class _AppScreenState extends State<AppsScreen> {
 
 class HomeScreen extends StatefulWidget {
   final PagingController<int,IToko> tokoController;
-  final PagingController<int,IToko> outletController;
+  final PagingController<int,IOutlet> outletController;
 
   const HomeScreen({Key? key,required this.tokoController,required this.outletController}) : super(key: key);
 
@@ -118,12 +118,23 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeState();
 }
 
-BorderRadius borderRadius = const BorderRadius.all(Radius.circular(15));
-ShapeBorder shapeBorder = RoundedRectangleBorder(borderRadius: borderRadius);
-BorderRadius cardRadius = const BorderRadius.vertical(bottom: Radius.circular(15));
-ShapeBorder cardBorder = RoundedRectangleBorder(borderRadius: cardRadius);
-
 class _HomeState extends State<HomeScreen> {
+  void onTokoClick(IToko toko) {
+    //showSnackbar("Toko Clicked", 'ID: ${toko.id}');
+    Get.toNamed("/apps/${toko.slug}");
+  }
+
+  void viewMoreTokoClick(IToko toko) {
+    Get.to(() => const AppsPagination());
+  }
+
+  void onOutletClick(IOutlet outlet) {
+    showSnackbar("Outlet Clicked", 'ID: ${outlet.id}');
+  }
+
+  void viewMoreOutletClick(IOutlet outlet) {
+    Get.to(() => const OutletPagination());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,9 +143,9 @@ class _HomeState extends State<HomeScreen> {
       child: Column(
         children: [
           Row(
-            children: [
-              SettingButton(borderRadius: borderRadius, shapeBorder: shapeBorder),
-              LogoutButton(borderRadius: borderRadius, shapeBorder: shapeBorder)
+            children: const [
+              SettingButton(),
+              LogoutButton()
             ]
           ),
           const SizedBox(height: 30,),
@@ -150,11 +161,11 @@ class _HomeState extends State<HomeScreen> {
               pagingController: widget.tokoController, 
               builderDelegate: CustomPagedChildBuilderDelegate(
                 pagingController: widget.tokoController,
-                itemBuilder: ((_, item, __) => _TokoCard(toko: item)),
+                itemBuilder: ((_, item, __) => TokoCard(toko: item,onClick: onTokoClick,viewMoreClick: viewMoreTokoClick)),
                 firstPageProgressIndicatorBuilder: (_) => Row(children: [
-                  _TokoCard.shimmer(context),
-                  _TokoCard.shimmer(context),
-                  _TokoCard.shimmer(context)
+                  TokoCard.shimmer(context),
+                  TokoCard.shimmer(context),
+                  TokoCard.shimmer(context)
                 ])
               ), 
               separatorBuilder: (_,__) => const SizedBox(width: 5,),
@@ -168,17 +179,17 @@ class _HomeState extends State<HomeScreen> {
 
           SizedBox(
             height: 170,
-            child: PagedListView<int,IToko>.separated(
+            child: PagedListView<int,IOutlet>.separated(
               physics: const AlwaysScrollableScrollPhysics(),
               scrollDirection: Axis.horizontal,
               pagingController: widget.outletController, 
               builderDelegate: CustomPagedChildBuilderDelegate(
                 pagingController: widget.outletController,
-                itemBuilder: ((_, item, __) => _TokoCard(toko: item)),
+                itemBuilder: ((_, item, __) => OutletCard(outlet: item,onClick: onOutletClick,viewMoreClick: viewMoreOutletClick)),
                 firstPageProgressIndicatorBuilder: (_) => Row(children: [
-                  _TokoCard.shimmer(context),
-                  _TokoCard.shimmer(context),
-                  _TokoCard.shimmer(context)
+                  OutletCard.shimmer(context),
+                  OutletCard.shimmer(context),
+                  OutletCard.shimmer(context)
                 ])
               ), 
               separatorBuilder: (_,__) => const SizedBox(width: 5,),
@@ -191,94 +202,4 @@ class _HomeState extends State<HomeScreen> {
       )
     );
   }
-}
-
-class _TokoCard extends StatelessWidget {
-  final IToko toko;
-
-  const _TokoCard({Key? key,required this.toko}) : super(key: key);
-
-  void onClick() {
-    showSnackbar("Toko Clicked", 'ID: ${toko.id}');
-  }
-
-  void viewMoreClick() {
-    Get.toNamed('/apps/lists?type=${toko.slug}');
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    if(toko.id == 0) {
-      return SizedBox(
-        width: 200,
-        child: Card(
-          elevation: 0,
-          shape: cardBorder,
-          child: InkWell(
-            onTap: viewMoreClick,
-            borderRadius: cardRadius,
-            child:  Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Padding(padding: EdgeInsets.symmetric(vertical: 10),child: Icon(Icons.read_more,size: 50,color: Colors.grey,)),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text('view_all'.tr,style: context.theme.textTheme.headline6),
-                ),
-
-              ]
-            ),
-          ),
-        ),
-      );
-    }
-    
-    return SizedBox(
-      width: 200,
-      child: Card(
-        elevation: 0,
-        shape: cardBorder,
-        child: InkWell(
-          onTap: onClick,
-          borderRadius: cardRadius,
-          child:  Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CachedNetworkImage(imageUrl: photoUrl(toko.logo?.url),height: 100,width: double.infinity,fit: BoxFit.fitWidth,cacheKey: 'toko_${toko.id}_card',),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Text((toko.name),style: context.theme.textTheme.headline6,overflow: TextOverflow.ellipsis,maxLines: 2),
-              ),
-
-            ]
-          ),
-        ),
-      ),
-    );
-  }
-
-  static Widget shimmer(BuildContext context) => Card(
-    elevation: 0,
-    shape: cardBorder,
-    child: Shimmer.fromColors(
-      baseColor: context.theme.scaffoldBackgroundColor, 
-      highlightColor: context.theme.textTheme.caption!.color!,
-      child: Column(children: [
-        Container(
-          width: 200,
-          height: 100,
-          color: context.theme.cardColor,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10),
-          child: Container(
-            width: 180,
-            height: 20,
-            color: context.theme.cardColor,
-          ),
-        )
-      ]),
-    )
-  );
 }

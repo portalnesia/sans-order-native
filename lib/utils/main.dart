@@ -74,7 +74,7 @@ SnackbarController showSnackbar(String title,String message,{
   bool instantInit = true,
 }) {
   Map<SnackType,Color?> background = {
-    SnackType.success: Get.theme.primaryColor.withAlpha(225),
+    SnackType.success: Get.theme.colorScheme.primary.withAlpha(225),
     SnackType.error: Get.theme.errorColor.withAlpha(225),
     SnackType.info: Get.theme.backgroundColor.withAlpha(225)
   };
@@ -116,7 +116,17 @@ String staticUrl(String? path) {
 
 String photoUrl(String? url) {
   final notFoundUrl = 'img/content?image=${Uri.encodeComponent('notfound.png')}';
-  return (url ?? staticUrl(notFoundUrl));
+  String fullUrl;
+  if(url != null) {
+    if(url.contains("content.portalnesia.com")) {
+      fullUrl = url;
+    } else {
+      fullUrl = webUrl(url);
+    }
+  } else {
+    fullUrl = staticUrl(notFoundUrl);
+  }
+  return fullUrl;
 }
 
 Widget errorBuilder(AsyncSnapshot? snaps) {

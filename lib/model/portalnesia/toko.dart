@@ -8,6 +8,7 @@ class IToko {
   int id;
   String name;
   String? description;
+  String? address;
   String slug;
   IFile? logo;
   String? slogan;
@@ -19,6 +20,7 @@ class IToko {
     required this.name,
     required this.slug,
     this.description,
+    this.address,
     this.logo,
     this.slogan,
     this.user,
@@ -31,10 +33,11 @@ class IToko {
       name: data['name'],
       slug: data['slug'],
       description: data['description'],
+      address: data['address'],
       slogan: data['slogan'],
-      user: data['user']['username'] is String ? PortalnesiaUser.fromMap(data['user']) : null,
-      logo: data['logo']['url'] is String ? IFile.fromMap(data['logo']) : null,
-      wallet: data['wallet']['balance'] is int ? IWallet.fromMap(data['wallet']) : null
+      user: data['user'] is Map ? PortalnesiaUser.fromMap(data['user']) : null,
+      logo: data['logo'] is Map ? IFile.fromMap(data['logo']) : null,
+      wallet: data['wallet'] is Map ? IWallet.fromMap(data['wallet']) : null
     );
   }
 }

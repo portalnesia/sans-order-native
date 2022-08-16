@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -29,22 +31,24 @@ Future<void> initialize(String entry) async{
   final oauth = Get.put(OauthControllers(),permanent: true);
   final setting = Get.put(SettingControllers(),permanent: true);
 
-  try {
+  if(!Platform.isWindows) {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    await dotenv.load(fileName: '.env');
+  }
+  await dotenv.load(fileName: '.env');
+  if(!Platform.isWindows) {
     await FirebaseAppCheck.instance.activate(
       webRecaptchaSiteKey: dotenv.env['NEXT_PUBLIC_RECAPTCHA']!,
     );
     await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
-    await GetStorage.init();
-    await oauth.load();
-    await setting.init();
-  } finally {
-    runApp(MyApp(entry: entry));
-    FlutterNativeSplash.remove();
-  } 
+  }
+  await GetStorage.init();
+  await oauth.load();
+  await setting.init();
+  
+  runApp(MyApp(entry: entry));
+  FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {

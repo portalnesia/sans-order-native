@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:dio/dio.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -31,21 +32,23 @@ class SettingControllers extends GetxController {
     lang = await locale.init(json);
     theme = await themeMode.init(json);
 
-    portalnesia.apiInstance.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) {
-        FirebaseAppCheck.instance.getToken().then((value) {
-          if(value != null) {
-            options.headers.addAll({'X-App-Token': value});
-          } else {
-            throw 'Cannot get App Token';
-          }
-        }).catchError((e,stack) {
-          handler.reject(e,stack);
-        }).whenComplete(() {
-          handler.next(options);
-        });
-      },
-    ));
+    if(!Platform.isWindows) {
+      portalnesia.apiInstance.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          FirebaseAppCheck.instance.getToken().then((value) {
+            if(value != null) {
+              options.headers.addAll({'X-App-Token': value});
+            } else {
+              throw 'Cannot get App Token';
+            }
+          }).catchError((e,stack) {
+            handler.reject(e,stack);
+          }).whenComplete(() {
+            handler.next(options);
+          });
+        },
+      ));
+    }
   }
 
   Future<void> save() async {

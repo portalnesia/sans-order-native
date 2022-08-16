@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:sans_order/utils/main.dart';
-import 'package:flutter/foundation.dart';
 
 class OauthControllers extends GetxController {
   var token = const IToken();
@@ -18,7 +17,6 @@ class OauthControllers extends GetxController {
     var lToken = await secureStorage.read(key: 'token');
     if(lToken != null) {
       final temp = IToken.fromString(lToken);
-
       if(temp.isExpired()) {
         return await refreshToken(temp);
       } else {

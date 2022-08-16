@@ -69,11 +69,11 @@ class IProducts {
       description: data['description'],
       hpp: data['hpp'],
       id: data['id'],
-      image: data['image']['id'] is int ? IFile.fromMap(data['image']) : null,
+      image: data['image'] is Map ? IFile.fromMap(data['image']) : null,
       metadata: data['metadata'],
       name: data['name'],
       price: data['price'],
-      promo: data['promo']['id'] is int ? IPromo.fromMap(data['promo']) : null,
+      promo: data['promo'] is Map ? IPromo.fromMap(data['promo']) : null,
       recipes: IRecipes.arrayMap(data),
       show_in_menu: data['show_in_menu']
     );

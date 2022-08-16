@@ -24,7 +24,7 @@ class IIngredient {
       unit: data['unit'],
       description: data['description'],
       stock: data['stock'],
-      outlet: data['outlet']['id'] is int ? IOutlet.fromMap(data['outlet']) : null
+      outlet: data['outlet'] is Map ? IOutlet.fromMap(data['outlet']) : null
     );
   }
 }

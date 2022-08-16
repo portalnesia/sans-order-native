@@ -2,6 +2,7 @@
 
 import 'package:sans_order/model/portalnesia/outlet_users.dart';
 import 'package:sans_order/model/portalnesia/toko.dart';
+import 'package:sans_order/portalnesia/model/portalnesia.dart';
 
 class BusinessHour {
   int id;
@@ -43,14 +44,14 @@ class IOutlet {
   bool cod;
   bool table_number;
   bool block;
-  List<IOutletUser> users;
+  List<IOutletUser>? users;
   IToko? toko;
-  List<BusinessHour> business_hour;
+  List<BusinessHour>? business_hour;
 
   IOutlet({
     this.address,
     required this.block,
-    required this.business_hour,
+    this.business_hour,
     required this.busy,
     required this.cod,
     this.description,
@@ -60,7 +61,7 @@ class IOutlet {
     required this.self_order,
     required this.table_number,
     this.toko,
-    required this.users
+    this.users
   });
 
   static IOutlet fromMap(Map data) {
@@ -77,7 +78,15 @@ class IOutlet {
       users: IOutletUser.arrayMap(data),
       address: data['address'],
       description: data['description'],
-      toko: data['toko']['name'] is String ? IToko.fromMap(data['toko']) : null
+      toko: data['toko'] is Map ? IToko.fromMap(data['toko']) : null
     );
   }
+}
+
+class OutletModel extends PortalnesiaModel<IOutlet> {
+  @override
+  IOutlet fromMap(Map data) {
+    return IOutlet.fromMap(data);
+  }
+
 }

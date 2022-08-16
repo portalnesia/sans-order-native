@@ -109,7 +109,7 @@ class IToken {
         'user': user?.toMap(),
         'refresh': refresh,
         'jwt': jwt,
-        'expired': expired?.millisecondsSinceEpoch
+        'expired': expired != null ? (expired!.millisecondsSinceEpoch / 1000).round() : null
       };
       return jsonEncode(json);
     }
@@ -117,11 +117,15 @@ class IToken {
   }
 
   static IToken fromMap(Map data) {
+    int? exp;
+    if(data['expired'] is int) {
+      exp = ((data['expired'] as int) * 1000).round();
+    }
     return IToken(
       user: data['user'] != null ? PortalnesiaUser.fromMap(data['user']) : null,
       refresh: data['refresh'],
       jwt: data['jwt'],
-      expired: data['expired'] == null ? null : DateTime.fromMillisecondsSinceEpoch(data['expired'] * 1000) 
+      expired: exp == null ? null : DateTime.fromMillisecondsSinceEpoch(exp) 
     );
   }
 
@@ -147,22 +151,23 @@ abstract class PortalnesiaModel<R> {
 
   PortalnesiaResponseModel<R> toModel(Map data) {
     final dt = fromMap(data['data']);
-    final meta = Meta.fromMap(data);
-
+    Meta? meta;
+    if(data['meta']['pagination'] != null) {
+      meta = Meta.fromMap(data);
+    }
     return PortalnesiaResponseModel<R>(data: dt, meta: meta);
   }
 
   PortalnesiaPaginationResponseModel<R> toPaginationModel(Map data) {
     List<R> lists = [];
-
     if(data['data'] is List) {
       for(Map datas in data['data']) {
         lists.add(fromMap(datas));
       }
     }
-
+    final Meta meta = Meta.fromMap(data);
     return PortalnesiaPaginationResponseModel<R>(
-      meta: Meta.fromMap(data),
+      meta: meta,
       data: lists
     );
   }

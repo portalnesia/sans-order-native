@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sans_order/controllers/settings.dart';
+import 'package:sans_order/utils/main.dart';
 import 'package:sans_order/widget/appbar.dart';
 import 'package:sans_order/widget/back.dart';
 import 'package:get/get.dart';
+import 'package:sans_order/widget/version.dart';
 
 class HomeSetting extends StatelessWidget {
   HomeSetting({Key? key}) : super(key: key);
@@ -66,8 +68,26 @@ class HomeSetting extends StatelessWidget {
               title: 'theme'.tr,
               description: GetBuilder<SettingControllers>(builder: (s) => Text(s.themeMode.valueLabel,style: context.theme.textTheme.caption,)), 
               onPressed: openThemeOption
-            )
+            ),
 
+            const _Section(title: 'About'),
+            _ListView(
+              title: 'terms_of_service'.tr,
+              onPressed: ()=>openUrl(webUrl('/pages/terms-of-services'))
+            ),
+            const Divider(height: 1,),
+            _ListView(
+              title: 'privacy_policy'.tr,
+              onPressed: ()=>openUrl(webUrl('/pages/privacy-policy'))
+            ),
+            
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Version()
+              ],
+            ),
           ])),
         ],
       ),

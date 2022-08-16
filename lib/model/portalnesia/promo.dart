@@ -36,9 +36,9 @@ class IPromo {
       description: data['description'],
       from: DateTime.parse(data['from']),
       id: data['id'],
-      image: data['image']['id'] is int ? IFile.fromMap(data['image']) : null,
+      image: data['image'] is Map ? IFile.fromMap(data['image']) : null,
       name: data['name'],
-      outlet: data['outlet']['id'] is int ? IOutlet.fromMap(data['outlet']) : null,
+      outlet: data['outlet'] is Map ? IOutlet.fromMap(data['outlet']) : null,
       to: DateTime.parse(data['to']),
       type: data['type'],
       products: IProducts.arrayMap(data)
