@@ -1,77 +1,107 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sans_order/controllers/oauth.dart';
-import 'package:sans_order/widget/loading.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:sans_order/model/portalnesia/outlet.dart';
+import 'package:sans_order/model/portalnesia/toko.dart';
+import 'package:sans_order/screen/apps/logout.dart';
+import 'package:sans_order/screen/apps/outlets_pagination.dart';
+import 'package:sans_order/screen/apps/transitionappbar.dart';
+import 'package:sans_order/screen/outlet/outlet_card.dart';
+import 'package:sans_order/screen/toko/toko_card.dart';
+import 'package:sans_order/utils/main.dart';
+import 'package:sans_order/widget/pagination.dart';
+import 'package:sans_order/widget/version.dart';
+import 'package:sans_order/screen/apps/setting.dart';
 
-class HomeAppbar extends AppBar {
-  HomeAppbar({Key? key}) : super(key: key, 
-    title: const Text('SansOrder'),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        bottom: Radius.circular(30),
-      ),
-    ),
-    bottom: const PreferredSize(preferredSize: Size.fromHeight(110.0), child: HomeProfile())
-  );
+import 'apps_pagination.dart';
+
+class AppsScreen extends StatefulWidget {
+  const AppsScreen({Key? key}) : super(key: key);
+  
+  @override
+  State<StatefulWidget> createState() => _AppScreenState();
 }
 
-class HomeProfile extends StatelessWidget {
-  const HomeProfile({Key? key}) : super(key: key);
+class _AppScreenState extends State<AppsScreen> {
+  final RefreshController refreshController = RefreshController();
+  final PagingController<int,IToko> tokoController = PagingController(firstPageKey: 1);
+  final PagingController<int,IOutlet> outletController = PagingController(firstPageKey: 1);
 
-  Widget getProfileView() {
-    return Stack(
-      children: <Widget>[
-        GetBuilder<OauthControllers>(builder: (u)=>CircleAvatar(
-          radius: 32,
-          backgroundColor: Get.theme.backgroundColor,
-          backgroundImage: u.user.picture != null ? CachedNetworkImageProvider(u.user.picture!) : null,
-          child: u.user.picture == null ? const Icon(Icons.person_outline_rounded) : null,
-        ))
-      ],
-    );
+  Future<void> _getMerchant(int pageKey) async {
+    try {
+      final items = await portalnesia.request<IToko>(Method.get, '/tokos?pagination[page]=$pageKey');
+      final newItems = items.toPaginationModel(TokoModel());
+      if(newItems.data.isNotEmpty) {
+        newItems.data.add(IToko(id: 0, name: '', slug: 'toko'));
+      }
+      tokoController.appendLastPage(newItems.data);
+    } catch (error) {
+      if(error is PortalnesiaException) tokoController.error = error;
+    }
+  }
+
+  Future<void> _getOutlet(int pageKey) async {
+    try {
+      final items = await portalnesia.request<IOutlet>(Method.get, '/outlets?pagination[page]=$pageKey');
+      final newItems = items.toPaginationModel(OutletModel());
+      if(newItems.data.isNotEmpty) {
+        newItems.data.add(IOutlet(block: false, busy: false, cod: false, id: 0, name: "", online_payment: false, self_order: false, table_number: false));
+      }
+      outletController.appendLastPage(newItems.data);
+    } catch (error) {
+      if(error is PortalnesiaException) outletController.error = error;
+    }
+  }
+
+  @override
+  void initState() {
+    tokoController.addPageRequestListener((pageKey) {
+      _getMerchant(pageKey);
+    });
+    outletController.addPageRequestListener((pageKey) {
+      _getOutlet(pageKey);
+    });
+    tokoController.addStatusListener((status) {
+      if(status == PagingStatus.completed) refreshController.refreshCompleted();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    refreshController.dispose();
+    tokoController.dispose();
+    outletController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(left: 30, bottom: 20,right: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              getProfileView(),
-              Container(
-                margin: const EdgeInsets.only(left: 20),
-                child:  Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GetBuilder<OauthControllers>(builder: (u)=>Text(
-                      u.user.name!,
-                      style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white),
-                    )),
-                    GetBuilder<OauthControllers>(builder: (u)=>Text(
-                      '@${u.user.username}',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.white,
-                      ),
-                    ))
-                  ],
-                )
-              )
-            ]
+    return SmartRefresher(
+      controller: refreshController,
+      header: const CustomClassicHeader(),
+      onRefresh: () {
+        tokoController.refresh();
+        outletController.refresh();
+      },
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: TransitionAppBarDelegate(
+              extent:200
+            ),
           ),
-          
-          /*GetBuilder<OauthControllers>(builder: (u)=>Stack(
-            children:  [
-              ElevatedButton(onPressed: ()=>openUrl('https://portalnesia.com/user/${u.user.username}'), child: const Text('Profile'))
-            ],
-          ))*/
+           
+          SliverList(
+            delegate: 
+              //SliverChildBuilderDelegate((_,i) => const HomeScreen())
+              SliverChildListDelegate([
+                HomeScreen(tokoController: tokoController,outletController: outletController,)
+              ]),
+          )
         ],
       ),
     );
@@ -79,76 +109,95 @@ class HomeProfile extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final PagingController<int,IToko> tokoController;
+  final PagingController<int,IOutlet> outletController;
+
+  const HomeScreen({Key? key,required this.tokoController,required this.outletController}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeState();
 }
 
 class _HomeState extends State<HomeScreen> {
-  final oauth = Get.find<OauthControllers>();
-
-  void logoutDialog() {
-    var context = Get.context as BuildContext;
-
-    showDialog(context: context, builder: (_)=>GetBuilder<OauthControllers>(builder: (u)=>AlertDialog(
-      title: Text("Anda Yakin?",style: Get.textTheme.headline4),
-      content: Text('Keluar dari akun @${u.user.username}',style: Get.textTheme.bodyText1),
-      actions: [
-        TextButton(onPressed: logout, style: TextButton.styleFrom(primary: Get.theme.errorColor), child: Text("Ya",style: Get.textTheme.headline4!.copyWith(color: Get.theme.errorColor))),
-        TextButton(onPressed: Get.back, child: Text('Batal',style: Get.textTheme.headline4))
-      ],
-    )));
-  }
-  
-  Future<void> logout() async {
-    var context = Get.context as BuildContext;
-    Get.back();
-    showDialog(barrierDismissible: false,context: context, builder: createLoadingDialog);
-    await Future.delayed(const Duration(seconds: 5));
-    //await oauth.logout();
-    Get.back();
-    //Get.offAllNamed('/login');
+  void onTokoClick(IToko toko) {
+    //showSnackbar("Toko Clicked", 'ID: ${toko.id}');
+    Get.toNamed("/apps/${toko.slug}");
   }
 
-  final BorderRadius borderRadius = const BorderRadius.all(Radius.circular(15));
-  final ShapeBorder shapeBorder = const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)));
-  
+  void viewMoreTokoClick(IToko toko) {
+    Get.to(() => const AppsPagination());
+  }
+
+  void onOutletClick(IOutlet outlet) {
+    showSnackbar("Outlet Clicked", 'ID: ${outlet.id}');
+  }
+
+  void viewMoreOutletClick(IOutlet outlet) {
+    Get.to(() => const OutletPagination());
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 20,horizontal: 10),
       child: Column(
         children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 20,horizontal: 10),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Card(
-                      shape: shapeBorder,
-                      child: InkWell(
-                        onTap: logoutDialog,
-                        borderRadius: borderRadius,
-                        child: Padding(
-                          padding: const EdgeInsets.all(25),
-                          child: Column(
-                            children: [
-                              Icon(Icons.logout,size: 35,color: Get.theme.errorColor,),
-                              const SizedBox(height: 15),
-                              Text('LOGOUT',style: TextStyle(fontSize: 22,color: Get.theme.errorColor),),
-                            ],
-                          ),
-                        ),
-                      )
-                    ),
-                  ]
-                ),
-              ],
-            )
+          Row(
+            children: const [
+              SettingButton(),
+              LogoutButton()
+            ]
           ),
+          const SizedBox(height: 30,),
+
+          Align(alignment: Alignment.centerLeft,child: Text('owned_merchant'.tr,style: context.theme.textTheme.headline3,),),
+          const Divider(),
+
+          SizedBox(
+            height: 170,
+            child: PagedListView<int,IToko>.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              pagingController: widget.tokoController, 
+              builderDelegate: CustomPagedChildBuilderDelegate(
+                pagingController: widget.tokoController,
+                itemBuilder: ((_, item, __) => TokoCard(toko: item,onClick: onTokoClick,viewMoreClick: viewMoreTokoClick)),
+                firstPageProgressIndicatorBuilder: (_) => Row(children: [
+                  TokoCard.shimmer(context),
+                  TokoCard.shimmer(context),
+                  TokoCard.shimmer(context)
+                ])
+              ), 
+              separatorBuilder: (_,__) => const SizedBox(width: 5,),
+            ),
+          ),
+
+          const SizedBox(height: 30,),
+
+          Align(alignment: Alignment.centerLeft,child: Text('managed_merchant'.tr,style: context.theme.textTheme.headline3,),),
+          const Divider(),
+
+          SizedBox(
+            height: 170,
+            child: PagedListView<int,IOutlet>.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              pagingController: widget.outletController, 
+              builderDelegate: CustomPagedChildBuilderDelegate(
+                pagingController: widget.outletController,
+                itemBuilder: ((_, item, __) => OutletCard(outlet: item,onClick: onOutletClick,viewMoreClick: viewMoreOutletClick)),
+                firstPageProgressIndicatorBuilder: (_) => Row(children: [
+                  OutletCard.shimmer(context),
+                  OutletCard.shimmer(context),
+                  OutletCard.shimmer(context)
+                ])
+              ), 
+              separatorBuilder: (_,__) => const SizedBox(width: 5,),
+            ),
+          ),
+
+          const SizedBox(height: 30,),
+          Version(textColor: context.theme.textTheme.bodyText2!.color)
         ],
       )
     );

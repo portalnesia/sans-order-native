@@ -11,7 +11,7 @@ class GlobalMiddleware extends GetMiddleware {
 
   @override
   RouteSettings? redirect(String? route) {
-    if(oauth.oauth.isLogin(false)) {
+    if(oauth.token.isLogin()) {
       return null;
     }
     return const RouteSettings(name: '/login');
@@ -26,7 +26,7 @@ class LoginMiddleware extends GetMiddleware {
 
   @override
   RouteSettings? redirect(String? route) {
-    if(!oauth.oauth.isLogin(false)) {
+    if(!oauth.token.isLogin()) {
       return null;
     }
     return const RouteSettings(name: '/apps');

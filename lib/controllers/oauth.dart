@@ -1,46 +1,27 @@
-
-import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
-import 'package:sans_order/model/oauth.dart';
-import 'package:sans_order/model/user.dart';
 import 'package:sans_order/utils/main.dart';
-import 'package:sans_order/utils/oauth.dart';
-
-class OauthProvider extends GetConnect {
-  Future<Response> revokeAccessToken(Oauth oauth) async {
-    return post('$AUTH_DOMAIN/revoke','token_type_hint=access_token&token=${oauth.access_token}',contentType: 'application/x-www-form-urlencoded');
-  }
-  Future<Response> revokeRefreshToken(Oauth oauth) async {
-    return post('$AUTH_DOMAIN/revoke','token_type_hint=refresh_token&token=${oauth.refresh_token}',contentType: 'application/x-www-form-urlencoded');
-  }
-}
 
 class OauthControllers extends GetxController {
-  var oauth = const Oauth();
-  var user = const User();
+  var token = const IToken();
   
-  Future<void> login(TokenResponse response) async {
-    oauth = Oauth.fromResponse(response);
-    user = User.fromString(oauth.id_token!);
+  Future<void> login(IToken response) async {
+    token = response;
 
-    await secureStorage.write(key:'oauth', value: oauth.toString());
-    await secureStorage.write(key: 'user', value: user.toString());
+    portalnesia.setToken(response);
 
+    await secureStorage.write(key:'token', value: token.toString());
     update();
   }
 
   Future<void> load() async {
-    var lOauth = await secureStorage.read(key: 'oauth');
-    var lUser = await secureStorage.read(key: 'user');
-  
-
-    if(lUser != null) user = User.fromString(lUser);
-    if(lOauth != null) {
-      final temp = Oauth.fromString(lOauth);
+    var lToken = await secureStorage.read(key: 'token');
+    if(lToken != null) {
+      final temp = IToken.fromString(lToken);
       if(temp.isExpired()) {
-        await refreshToken(temp.refresh_token!);
+        return await refreshToken(temp);
       } else {
-        oauth = Oauth.fromString(lOauth);
+        token = temp;
+        portalnesia.setToken(temp);
       }
     }
 
@@ -49,30 +30,22 @@ class OauthControllers extends GetxController {
 
   Future<void> logout() async {
     try {
-      OauthProvider provider = OauthProvider();
-      await provider.revokeAccessToken(oauth);
-      await provider.revokeRefreshToken(oauth);
+      await portalnesia.logout();
     // ignore: empty_catches
     } catch(e) {
 
     }
 
-    await secureStorage.delete(key: 'oauth');
-    await secureStorage.delete(key: 'user');
+    await secureStorage.delete(key: 'token');
 
-    oauth = const Oauth();
-    user = const User();
+    token = const IToken();
 
     update();
   }
 
-  Future<void> refreshToken(String token) async {
-    final TokenResponse? result = await appAuth.token(
-      TokenRequest(AUTH_CLIENT_ID, AUTH_REDIRECT_URI,refreshToken: token,scopes: AUTH_SCOPE,serviceConfiguration: serviceConfiguration)
-    );
-
+  Future<void> refreshToken(IToken token) async {
+    final IToken? result = await portalnesia.refreshToken(token);
     if(result == null) return;
-
     await login(result);
   }
 }

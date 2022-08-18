@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "770501761513",
+    "project_id": "sans-order",
+    "storage_bucket": "sans-order.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:770501761513:android:9e0b38fbdaa0bc52965378",
+        "android_client_info": {
+          "package_name": "com.portalnesia.sansorder.dashboard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "770501761513-evp9ga1h85v46177vf9lfsut346kqm3r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu2S6q43t5WnCdlBlINK8zYVPlwPtL0Mo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "770501761513-evp9ga1h85v46177vf9lfsut346kqm3r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
